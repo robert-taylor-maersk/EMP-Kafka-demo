@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, Response
-from confluent_kafka import Consumer
+import json
 import os
 import time
-import json
 
+from confluent_kafka import Consumer
+from flask import Flask, Response, render_template
 
 app = Flask(__name__)
 
@@ -15,7 +15,20 @@ def index():
     return render_template("index.html")
 
 
-# Consumer API
+def events(c):
+    while True:
+        msg = c.poll(5.0)
+        if msg is None:
+            continue
+        if msg.error():
+            continue
+
+        data = json.loads(msg.value().decode("utf-8"))
+        if data.get("TYPE_NAME") == "Container Ship":
+            time.sleep(0.1)
+            yield "data: {}\n\n".format(msg.value().decode("utf-8"))
+
+
 @app.route("/map/live")
 def get_messages():
 
@@ -33,21 +46,7 @@ def get_messages():
     )
 
     c.subscribe(["MSK.arrivalIntelligence.marineTrafficAisReading.topic.internal.any.v1"])
-
-    def events():
-        while True:
-            msg = c.poll(1.0)
-            if msg is None:
-                continue
-            if msg.error():
-                continue
-
-            data = json.loads(msg.value().decode("utf-8"))
-            if data.get("TYPE_NAME") == "Container Ship":
-                time.sleep(0.1)
-                yield "data: {}\n\n".format(msg.value().decode("utf-8"))
-
-    return Response(events(), mimetype="text/event-stream")
+    return Response(events(c), mimetype="text/event-stream")
 
 
 if __name__ == "__main__":

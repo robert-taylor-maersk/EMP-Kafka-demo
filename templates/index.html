@@ -20,6 +20,31 @@
 
   <title>Kafka Demo</title>
   <style>
+    #logo {
+      float: left;
+      height: 50px;
+      margin-right: 10px;
+    }
+
+    #title-container {
+      height: 40pt;
+      display: flex;
+      justify-content: space-between;
+      font-family: Arial, Helvetica, sans-serif
+    }
+
+    .title {
+      font-size: 35pt;
+      font-weight: bold;
+      color: #3b86c7;
+    }
+
+    .tagline {
+      font-size: 14pt;
+      align-self: flex-end;
+      margin-bottom: 6px;
+    }
+
     table {
       font-size: 100%;
     }
@@ -33,8 +58,13 @@
 </head>
 
 <body>
-  <h1>Vessel locations</h1>
-  <div id="map" style="width:100%; height:800px;"></div>
+  <img id="logo" src="/static/cloudeng.png" />
+  <div id="title-container">
+    <span class="title">Maersk Vessel locations</span>
+    <span class="tagline">Powered by EMP 💙</span>
+  </div>
+
+  <div id="map" style="width:100%; height:1000px;"></div>
   <script src="../static/leaf.js"></script>
 </body>
 
